@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block content %}
+<html>
+<body class='p-2'>
+<div id="carouselExampleIndicators" class="carousel slide" data-interval="1000">
+ 
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+ 
+    <div class="carousel-inner" style='height:500px'>
+      <div class="carousel-item active">
+        <img src="/static/Img-1.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/Img-2.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/Img-3.jpg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</br>
+</br>
+
+<div class="container" style="max-height: 400px; overflow-y: auto;">
+  {% if user.is_authenticated %}
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="card-title">Notices</h5>
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for notice in notices %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>{{ notice.message }}</div>
+              <div>
+                <a href="{% url 'edit_notice' notice.id %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'delete_notice' notice.id %}" class="btn btn-sm btn-danger">Delete</a>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="card-title">Add Notice</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" action="{% url 'add_notice' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="notice_message" class="form-label">Notice Message</label>
+          <textarea class="form-control" id="notice_message" name="message" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Notice</button>
+      </form>
+    </div>
+  </div>  
+      <div class="card-footer">
+        {% comment %} <a href="{% url 'clear_notices' %}" class="btn btn-danger">Clear All Notices</a> {% endcomment %}
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading">Welcome!</h4>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title">Notices</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for notice in notices %}
+            <li class="list-group-item">{{ notice.message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+</br>
+<div>
+ <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
+    <img src="/static/Gurdaan.jpg" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+
+    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
+        <img src="/static/Keerat.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+
+    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
+        <img src="/static/Manuel.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+
+    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 3 0px 30px 10px;">
+        <img src="/static/Meet.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+</div>
+<footer class="bg-dark text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h4>About Us</h4>
+        <p>We are AI-Enthusiasts enrolled as student in Lambton College. If want to know more about us follow us on links mentioned</p>
+        <img src="/static/Logo.jpg" alt="Logo" class="img-fluid">
+      </div>
+      <div class="col-md-4">
+        <h4>Contact Us</h4>
+        <ul class="list-unstyled">
+          <li>Email: gurdaan.walia7@gmail.com</li>
+          <li>Phone: (123) 456-7890</li>
+          <li>Address: Thornhill, Ontario</li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h4>Follow Us</h4>
+        <ul class="list-inline">
+          <li class="list-inline-item">
+            <a href="#"><i class="fab fa-facebook fa-2x"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#"><i class="fab fa-twitter fa-2x"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#"><i class="fab fa-instagram fa-2x"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p class="text-center">Copyright © K2S-Academy 2023</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+{% endblock content %}
