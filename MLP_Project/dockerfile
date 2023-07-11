@@ -1,0 +1,32 @@
+# Base image
+FROM python:3.9
+
+# Set the environment variable
+ENV SECRET_KEY='django-insecure-zp+r7eg71vfy^c8l3$u@+eoy7yn++&-g4ou2p#9#7=2ys=&^z4'
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
+
+# Run migrations
+RUN python manage.py migrate
+
+# Collect static files
+RUN python manage.py collectstatic --no-input
+
+# Expose the port
+EXPOSE 8000
+
+# Set the command to run the server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+

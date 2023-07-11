@@ -2,11 +2,8 @@ from django.shortcuts import render, HttpResponse
 from datetime import datetime
 from Home.models import Contact,Notice
 from django.contrib import messages
-from WebsiteTextParser import TextParser
-from SummarizingModel import summarizer
 import json
 from django.http import JsonResponse
-from PIL import Image
 import pytesseract
 import requests
 from django.shortcuts import render,redirect
@@ -74,14 +71,20 @@ def contactUs(request):
         contact=Contact(email=email,text=text,date=date)
         contact.save()
         messages.success(request, 'Profile details updated.')
-    user_id = request.session.get('user_id')
-    user = get_user_model().objects.get(id=user_id)
-    return render(request,'contactUS.html',{'user':user})
+    try:
+        user_id = request.session.get('user_id')
+        user = get_user_model().objects.get(id=user_id)
+        return render(request,'contactUs.html',{'user':user})
+    except User.DoesNotExist:
+        return render(request,'contactUs.html')
 
 def aboutus(request):
-    user_id = request.session.get('user_id')
-    user = get_user_model().objects.get(id=user_id)
-    return render(request,'aboutus.html',{'user':user})
+    try:
+        user_id = request.session.get('user_id')
+        user = get_user_model().objects.get(id=user_id)
+        return render(request,'aboutus.html',{'user':user})
+    except User.DoesNotExist:
+        return render(request,'aboutus.html')
 
 def signup(request):
     return render(request,'signup.html')
