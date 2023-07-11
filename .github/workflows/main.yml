@@ -1,0 +1,48 @@
+name: Deploy to Docker and GoDaddy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  DOCKER_IMAGE: gurdaan/k2s_academy_docker_image7
+  GODADDY_DOMAIN: http://www.k2sacademy.com
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ github.sha }}, latest
+          registry: ${{ env.DOCKER_IMAGE }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Deploy to GoDaddy
+        run: |
+             # SSH into the GoDaddy server
+              ssh username@your-godaddy-server.com << EOF
+                # Navigate to the directory where your application is located
+                cd /path/to/your/application
+
+                # Pull the latest Docker image
+                docker pull ${{ env.DOCKER_IMAGE }}:latest
+
+                # Stop and remove the existing container
+                docker stop k2s_academy_docker_image7
+                docker rm k2s_academy_docker_image7
+
+                # Start a new container using the latest image
+                docker run -d --k2s_academy_docker_image7 -p 80:80 ${{ env.DOCKER_IMAGE }}:latest
+              EOF
