@@ -9,7 +9,7 @@ env:
   REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
   REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   DOCKER_IMAGE: gurdaan/k2s_academy_docker_image7
-  GODADDY_DOMAIN: your-godaddy-domain.com
+  GODADDY_DOMAIN: http://www.k2sacademy.com
   SSH_USERNAME: your-ssh-username
 
 jobs:
