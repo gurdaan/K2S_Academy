@@ -1,39 +1,115 @@
 {% extends 'base.html' %}
 {% block content %}
 <html>
+  <style>
+    .notice-message {
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .carousel-inner {
+      height: 100vh; /* Set the carousel height to 100% of the viewport height */
+    }
+    
+    .carousel-item img {
+      object-fit: cover; /* Ensure the image fills the container without distortion */
+      height: 100%; /* Set the image height to 100% of the parent container */
+    }
+
+    .card-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+    }
+    
+    .card-overlay-content {
+      width: 90%;
+      max-width: 500px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    
+    
+    @media (max-width: 767px) {
+      .card-overlay-content {
+        width: 100%;
+        max-width: none;
+      }
+    }
+    
+    
+    @keyframes expandCardAnimation {
+      0% {
+        transform: scale(0);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .no-scroll {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+
+  .social-icon {
+    color: #333; /* Customize the icon color */
+  }
+  
+  .social-links a.btn {
+    background-color: transparent;
+  }
+  
+
+  .social-icon:hover {
+    color: #007bff; /* Optional: Change the icon color on hover */
+  }
+    
+  </style>
+  
 <body class='p-2'>
-<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
- 
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
- 
-    <div class="carousel-inner" style='height:500px'>
+  <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
+      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
+      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
       <div class="carousel-item active">
-        <img src="/static/Img-1.jpg" class="d-block w-100" alt="...">
+        <img src="/static/Img-1.jpg" class="d-block w-100" alt="Image 1">
       </div>
       <div class="carousel-item">
-        <img src="/static/Img-2.jpg" class="d-block w-100" alt="...">
+        <img src="/static/Img-2.jpg" class="d-block w-100" alt="Image 2">
       </div>
       <div class="carousel-item">
-        <img src="/static/Img-3.jpg" class="d-block w-100" alt="...">
+        <img src="/static/Img-3.jpg" class="d-block w-100" alt="Image 3">
       </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
-    </button>
+    </a>
   </div>
+  
+  
 </br>
 </br>
 
-<div class="container" style="max-height: 400px; overflow-y: auto;">
+<div class="container" style="max-height: 600px; overflow-y: auto;">
   {% if user.is_authenticated %}
   <div class="card mb-4">
     <div class="card-header">
@@ -44,7 +120,7 @@
         {% for notice in notices %}
           <li class="list-group-item">
             <div class="d-flex justify-content-between">
-              <div>{{ notice.message }}</div>
+              <div class="notice-message">{{ notice.message| safe }}</div>
               <div>
                 <a href="{% url 'edit_notice' notice.id %}" class="btn btn-sm btn-primary">Edit</a>
                 <a href="{% url 'delete_notice' notice.id %}" class="btn btn-sm btn-danger">Delete</a>
@@ -55,7 +131,9 @@
       </ul>
     </div>
   </div>
-  
+</div>
+
+</br>
   <div class="card mb-4">
     <div class="card-header">
       <h5 class="card-title">Add Notice</h5>
@@ -65,7 +143,9 @@
         {% csrf_token %}
         <div class="mb-3">
           <label for="notice_message" class="form-label">Notice Message</label>
-          <textarea class="form-control" id="notice_message" name="message" rows="3"></textarea>
+          <div id="editor" style="height: 300px;"></div>
+          <input type="hidden" id="notice_message_input" name="message">
+
         </div>
         <button type="submit" class="btn btn-primary">Add Notice</button>
       </form>
@@ -86,7 +166,7 @@
       <div class="card-body">
         <ul class="list-group">
           {% for notice in notices %}
-            <li class="list-group-item">{{ notice.message }}</li>
+            <li class="list-group-item">{{ notice.message|safe }}</li>
           {% endfor %}
         </ul>
       </div>
@@ -94,44 +174,71 @@
   {% endif %}
 </div>
 
-</br>
-<div>
- <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
-    <img src="/static/Gurdaan.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
-    </div>
-  </div>
 
-    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <div class="card" style="width: 18rem; margin: 40px;">
+        <img src="/static/Gurdaan.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Website Developed By</h5>
+          <p class="card-text">Gurdaan Walia, Software developer with 3 years of experience and AI-Machine Learning enthusiast</p>
+          <a href="#" class="btn btn-primary" onclick="expandCard()">Show More Details</a>
+        </div>
+      </div>
+
+      <div id="expandedCard" class="card-overlay d-none">
+        <div class="card-overlay-content">
+          <img src="/static/Gurdaan.jpg" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">Follow me on</h5>
+            <p class="card-text">Some more detailed information about the person.</p>
+            <div class="social-links d-flex flex-wrap justify-content-center justify-content-sm-between">
+              <a href="https://www.linkedin.com/in/gurdaan-walia/" class="btn btn-primary">
+                <img src="/static/linkedin.jpeg" alt="LinkedIn" class="social-icon" style="width: 64px; height: 32px;">
+              </a>
+              <a href="https://www.youtube.com/channel/UC3kUG9fFjJ-rOny75dpwneQ" class="btn btn-primary">
+                <img src="/static/youtube.jpeg" alt="YouTube" class="social-icon" style="width: 64px; height: 32px;">
+              </a>
+              <a href="https://github.com/gurdaan" class="btn btn-primary">
+                <img src="/static/github.png" alt="GitHub" class="social-icon" style="width: 64px; height: 32px;">
+              </a>
+            </div>
+            <div class="mt-3">
+              <a href="#" class="btn btn-danger btn-lg d-block mx-auto" onclick="collapseCard()">Collapse</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+    </div>
+
+    <div class="col-md-4">
+      <div class="card" style="width: 18rem; margin: 40px;">
         <img src="/static/Keerat.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
+      </div>
     </div>
 
-    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 30px 30px 10px;">
+    <div class="col-md-4">
+      <div class="card" style="width: 18rem; margin: 40px;">
         <img src="/static/Manuel.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
+      </div>
     </div>
 
-    <div class="card" style="width: 18rem;display: inline-block;margin: 10px 3 0px 30px 10px;">
-        <img src="/static/Meet.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-    </div>
+  </div>
 </div>
+</br>
 <footer class="bg-dark text-white py-5">
   <div class="container">
     <div class="row">
@@ -144,21 +251,21 @@
         <h4>Contact Us</h4>
         <ul class="list-unstyled">
           <li>Email: gurdaan.walia7@gmail.com</li>
-          <li>Phone: (123) 456-7890</li>
-          <li>Address: Thornhill, Ontario</li>
+          <li>Phone: (+91) 9205656019, </li>
+          <li>Address: Rohini, Delhi</li>
         </ul>
       </div>
       <div class="col-md-4">
         <h4>Follow Us</h4>
         <ul class="list-inline">
           <li class="list-inline-item">
-            <a href="#"><i class="fab fa-facebook fa-2x"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-facebook fa-2x"></i></a>
           </li>
           <li class="list-inline-item">
-            <a href="#"><i class="fab fa-twitter fa-2x"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter fa-2x"></i></a>
           </li>
           <li class="list-inline-item">
-            <a href="#"><i class="fab fa-instagram fa-2x"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram fa-2x"></i></a>
           </li>
         </ul>
       </div>
@@ -173,11 +280,56 @@
 
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+
+
 <script>
   $(document).ready(function() {
     setInterval(function() {
       $('.carousel').carousel('next');
-    }, 1000);
+    }, 4000);
   });
+  
+  function expandCard() {
+    const expandedCard = document.getElementById('expandedCard');
+    expandedCard.classList.remove('d-none');
+    document.body.classList.add('no-scroll');
+  }
+  
+  function collapseCard() {
+    const expandedCard = document.getElementById('expandedCard');
+    expandedCard.classList.add('d-none');
+    document.body.classList.remove('no-scroll');
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    if ({{ user.is_authenticated|lower }}) {
+      var quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Enter notice message...',
+      });
+      
+      var form = document.querySelector('form');
+      var noticeMessageInput = document.querySelector('#notice_message_input');
+      
+      quill.on('text-change', function() {
+        var htmlContent = quill.root.innerHTML;
+        noticeMessageInput.value = htmlContent;
+      });
+      
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        form.submit();
+      });
+    }
+  });
+  
+  
+
+  
 </script>
 {% endblock content %}

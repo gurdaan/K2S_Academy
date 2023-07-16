@@ -1,13 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Edit Notice</h2>
-  <form method="post" action="{% url 'edit_notice' notice.id %}">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="notice_message" class="form-label">Notice Message</label>
-      <textarea class="form-control" id="notice_message" name="message" rows="3">{{ notice.message }}</textarea>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title text-center">Edit Notice</h2>
+            <form method="post" action="{% url 'edit_notice' notice.id %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="notice_message" class="form-label">Notice Message</label>
+                <div id="editor" style="height: 300px;">{{ notice.message|safe }}</div>
+                <textarea id="notice_message" name="message" style="display: none;"></textarea>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-  </form>
+  </div>
+
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    var quill = new Quill('#editor', {
+      theme: 'snow',
+    });
+    var noticeMessageInput = document.querySelector('#notice_message');
+    quill.on('text-change', function() {
+      noticeMessageInput.value = quill.root.innerHTML;
+    });
+  </script>
 {% endblock %}

@@ -24,10 +24,12 @@ def index(request):
         messages.success(request, 'Notice added successfully.')
     
     notices = Notice.objects.all()
-    print("--------------------------",request.user)
-    return render(request, 'index.html', {'notices': notices, 'user': request.user})
-    #return render(request,'index.html',context)
-
+    try:
+        user_id = request.session.get('user_id')
+        user = get_user_model().objects.get(id=user_id)
+        return render(request, 'index.html', {'notices': notices, 'user': user})
+    except User.DoesNotExist:
+        return render(request,'index.html',{'notices': notices})
 
 def add_notice(request):
     if request.method == 'POST':
@@ -48,6 +50,7 @@ def edit_notice(request, notice_id):
     notice = Notice.objects.get(id=notice_id)
     if request.method == 'POST':
         message = request.POST.get('message')
+        print("Message Received after editing:",message)
         notice.message = message
         notice.save()
         user_id = request.session.get('user_id')
